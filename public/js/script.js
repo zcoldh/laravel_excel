@@ -2,7 +2,7 @@
 var iBytesUploaded = 0;
 var iBytesTotal = 0;
 var iPreviousBytesLoaded = 0;
-var iMaxFilesize = 1048576; // 1MB
+var iMaxFilesize = 1048576*5; // 5MB
 var oTimer = 0;
 var sResultFileSize = '';
 
@@ -35,10 +35,9 @@ function fileSelected() {
     document.getElementById('warnsize').style.display = 'none';
 
     // get selected file element
-    var oFile = document.getElementById('image_file').files[0];
-
+    var oFile = document.getElementById('excel_file').files[0];
     // filter for image files
-    var rFilter = /^(image\/bmp|image\/gif|image\/jpeg|image\/png|image\/tiff)$/i;
+    var rFilter = /^(application\/vnd.ms-csv|application\/vnd.ms-excel|application\/vnd.ms-xlsx)$/i;
     if (! rFilter.test(oFile.type)) {
         document.getElementById('error').style.display = 'block';
         return;
@@ -58,7 +57,7 @@ function fileSelected() {
         oReader.onload = function(e){
 
         // e.target.result contains the DataURL which we will use as a source of the image
-        oImage.src = e.target.result;
+        // oImage.src = e.target.result;
 
         oImage.onload = function () { // binding onload event
 
@@ -91,15 +90,15 @@ function startUploading() {
 
     // get form data for POSTing
     //var vFD = document.getElementById('upload_form').getFormData(); // for FF3
-    var vFD = new FormData(document.getElementById('upload_form')); 
+    var vFD = new FormData(document.getElementById('upload_form'));
 
     // create XMLHttpRequest object, adding few event listeners, and POSTing our data
-    var oXHR = new XMLHttpRequest();        
+    var oXHR = new XMLHttpRequest();
     oXHR.upload.addEventListener('progress', uploadProgress, false);
     oXHR.addEventListener('load', uploadFinish, false);
     oXHR.addEventListener('error', uploadError, false);
     oXHR.addEventListener('abort', uploadAbort, false);
-    oXHR.open('POST', 'upload.php');
+    oXHR.open('POST', '/article');
     oXHR.send(vFD);
 
     // set inner timer
@@ -128,7 +127,7 @@ function doInnerUpdates() { // we will use this function to display upload speed
     }
 
     document.getElementById('speed').innerHTML = iSpeed;
-    document.getElementById('remaining').innerHTML = '| ' + secondsToTime(secondsRemaining);        
+    document.getElementById('remaining').innerHTML = '| ' + secondsToTime(secondsRemaining);
 }
 
 function uploadProgress(e) { // upload process in progress
@@ -167,7 +166,7 @@ function uploadFinish(e) { // upload successfully finished
 function uploadError(e) { // upload error
     document.getElementById('error2').style.display = 'block';
     clearInterval(oTimer);
-}  
+}
 
 function uploadAbort(e) { // upload abort
     document.getElementById('abort').style.display = 'block';
